@@ -9,7 +9,7 @@ SELENIUM_VERSION="4.3.0"
 
 echo "Install dependencies"
 apt update && apt upgrade -y
-apt install nginx maven curl gnupg2 unzip -y
+apt install nginx maven curl gnupg2 unzip fonts-noto-cjk -y
 
 echo "Installing CircleCI Runner for ${PLATFORM}"
 if [ -z ${TOKEN} ]; then
