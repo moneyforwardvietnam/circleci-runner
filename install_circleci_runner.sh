@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 # Use this script by passing circleci token as parameter : ./install_circleci_runner.sh YOUR_TOKEN
-randomString=$RANDOM
-platform="linux/amd64"
-token=$1
-localip=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+RANDOM_STRING=$(echo $RANDOM | md5sum | head -c 12)
+PLATFORM="linux/amd64"
+TOKEN=$1
+LOCAL_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+SELENIUM_VERSION="4.3.0"
 #JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | awk '{print $3}')
 
 echo "Install dependencies"
 apt update && apt upgrade -y
 apt install nginx maven curl gnupg2 unzip -y
 
-echo "Installing CircleCI Runner for ${platform}"
+echo "Installing CircleCI Runner for ${PLATFORM}"
+if [ -z ${TOKEN} ]; then
+  echo "ERROR: Please input your CircleCI Token"
+  exit
+fi
 
 base_url="https://circleci-binary-releases.s3.amazonaws.com/circleci-launch-agent"
 if [ -z ${agent_version+x} ]; then
@@ -27,13 +32,13 @@ chmod 0750 ${prefix}/workdir
 echo "Setting up CircleCI Runner config"
 cat <<EOF > ${prefix}/launch-agent-config.yaml
 api:
-  auth_token: ${token}
+  auth_token: ${TOKEN}
 
 runner:
-  name: qa_automation_runner_${randomString}
+  name: qa_automation_runner_${RANDOM_STRING}
   command_prefix: ["sudo", "-niHu", "root", "--"]
   ssh:
-    advertise_addr: ${localip}:54782
+    advertise_addr: ${LOCAL_IP}:54782
   working_directory: ${prefix}/workdir
   cleanup_working_directory: true
 EOF
@@ -44,9 +49,9 @@ chmod 600 ${prefix}/launch-agent-config.yaml
 echo "Using CircleCI Launch Agent version ${agent_version}"
 echo "Downloading and verifying CircleCI Launch Agent Binary"
 curl -sSL "${base_url}/${agent_version}/checksums.txt" -o checksums.txt
-file="$(grep -F "${platform}" checksums.txt | cut -d ' ' -f 2 | sed 's/^.//')"
+file="$(grep -F "${PLATFORM}" checksums.txt | cut -d ' ' -f 2 | sed 's/^.//')"
 echo "Downloading CircleCI Launch Agent: ${file}"
-mkdir -p "${platform}"
+mkdir -p "${PLATFORM}"
 curl --compressed -L "${base_url}/${agent_version}/${file}" -o "${file}"
 
 # Verifying download
@@ -72,11 +77,13 @@ TimeoutStopSec=18300
 [Install]
 WantedBy=multi-user.target
 EOF
+
 systemctl restart circleci.service
 
 # Download selenium binary
 echo "Download Selenium Binary"
-curl --compressed -L https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -o /usr/local/bin/selenium-server.jar
+# curl --compressed -L https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -o /usr/local/bin/selenium-server.jar
+curl --compressed -L https://github.com/SeleniumHQ/selenium/releases/download/selenium-${SELENIUM_VERSION}/selenium-server-${SELENIUM_VERSION}.jar -o /usr/local/bin/selenium-server.jar
 
 # Setup selenium server as service
 echo "Setup Selenium Service"
@@ -91,13 +98,15 @@ User=root
 Group=root
 Type=simple
 WorkingDirectory=/usr/local/bin
-ExecStart=java -jar selenium-server.jar -log /var/log/selenium.log
+ExecStart=java -jar selenium-server.jar standalone --log /var/log/selenium.log
 ExecStop=/bin/kill -15 $MAINPID
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
 systemctl restart selenium.service
 systemctl daemon-reload
+
 ./install_google_chrome.sh
 ./install_chromedriver.sh

@@ -119,7 +119,7 @@ else
       echo "Installing Chrome for AMD64"
       $SUDO sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
     fi
-    $SUDO apt-get update
+    # $SUDO apt-get update
     $SUDO apt-get install -y google-chrome-${CHANNEL}
   else
     # Google does not keep older releases in their PPA, but they can be installed manually. HTTPS should be enough to secure the download.
