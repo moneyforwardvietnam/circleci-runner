@@ -9,7 +9,7 @@ SELENIUM_VERSION="4.3.0"
 
 echo "Install dependencies"
 apt update && apt upgrade -y
-apt install nginx maven curl gnupg2 unzip fonts-noto-cjk -y
+apt install jq nginx maven curl gnupg2 unzip fonts-noto-cjk -y
 
 echo "Installing CircleCI Runner for ${PLATFORM}"
 if [ -z ${TOKEN} ]; then
@@ -78,6 +78,7 @@ TimeoutStopSec=18300
 WantedBy=multi-user.target
 EOF
 
+systemctl daemon-reload
 systemctl restart circleci.service
 
 # Download selenium binary
@@ -105,8 +106,8 @@ ExecStop=/bin/kill -15 $MAINPID
 WantedBy=multi-user.target
 EOF
 
-systemctl restart selenium.service
 systemctl daemon-reload
+systemctl restart selenium.service
 
 ./install_google_chrome.sh
 ./install_chromedriver.sh
