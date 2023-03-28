@@ -80,6 +80,7 @@ EOF
 
 systemctl daemon-reload
 systemctl restart circleci.service
+systemctl enable circleci.service
 
 # Download selenium binary
 echo "Download Selenium Binary"
@@ -108,6 +109,7 @@ EOF
 
 systemctl daemon-reload
 systemctl restart selenium.service
+systemctl enable selenium.service
 
 ./install_google_chrome.sh
 ./install_chromedriver.sh
