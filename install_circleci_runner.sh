@@ -4,7 +4,7 @@ RANDOM_STRING=$(echo $RANDOM | md5sum | head -c 12)
 PLATFORM="linux/amd64"
 TOKEN=$1
 LOCAL_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-SELENIUM_VERSION="4.3.0"
+SELENIUM_VERSION="4.8.3"
 #JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | awk '{print $3}')
 
 echo "Install dependencies"
