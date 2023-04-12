@@ -4,12 +4,12 @@ RANDOM_STRING=$(echo $RANDOM | md5sum | head -c 12)
 PLATFORM="linux/amd64"
 TOKEN=$1
 LOCAL_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-SELENIUM_VERSION="4.8.0"
+SELENIUM_VERSION="4.8.3"
 #JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | awk '{print $3}')
 
 echo "Install dependencies"
-apt update && apt upgrade -y
-apt install jq nginx maven curl gnupg2 unzip fonts-noto-cjk -y
+apt update -y
+apt install nginx maven curl gnupg2 unzip -y
 
 echo "Installing CircleCI Runner for ${PLATFORM}"
 if [ -z ${TOKEN} ]; then
@@ -78,14 +78,12 @@ TimeoutStopSec=18300
 WantedBy=multi-user.target
 EOF
 
-systemctl daemon-reload
 systemctl restart circleci.service
-systemctl enable circleci.service
 
 # Download selenium binary
 echo "Download Selenium Binary"
 # curl --compressed -L https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -o /usr/local/bin/selenium-server.jar
-curl --compressed -L https://github.com/SeleniumHQ/selenium/releases/download/selenium-${SELENIUM_VERSION}/selenium-server-${SELENIUM_VERSION}.jar -o /usr/local/bin/selenium-server.jar
+curl --compressed -L https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.8.0/selenium-server-${SELENIUM_VERSION}.jar -o /usr/local/bin/selenium-server.jar
 
 # Setup selenium server as service
 echo "Setup Selenium Service"
@@ -100,16 +98,15 @@ User=root
 Group=root
 Type=simple
 WorkingDirectory=/usr/local/bin
-ExecStart=java -jar selenium-server.jar standalone --log /var/log/selenium.log
+ExecStart=java -jar selenium-server.jar standalone --driver-implementation "chrome" --max-sessions 8 --override-max-sessions true --detect-drivers true --log /var/log/selenium.log
 ExecStop=/bin/kill -15 $MAINPID
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-systemctl daemon-reload
 systemctl restart selenium.service
-systemctl enable selenium.service
+systemctl daemon-reload
 
 ./install_google_chrome.sh
 ./install_chromedriver.sh
