@@ -82,7 +82,7 @@ systemctl restart circleci.service
 
 # Download selenium binary
 echo "Download Selenium Binary"
-# curl --compressed -L https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar -o /usr/local/bin/selenium-server.jar
+# curl --compressed -L https://github.com/SeleniumHQ/selenium/releases/download/selenium-${SELENIUM_VERSION}/selenium-server-${SELENIUM_VERSION}.jar -o /usr/local/bin/selenium-server.jar
 curl --compressed -L https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.8.0/selenium-server-${SELENIUM_VERSION}.jar -o /usr/local/bin/selenium-server.jar
 
 # Setup selenium server as service
