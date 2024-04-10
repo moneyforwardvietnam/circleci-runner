@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Update system repositories
-sudo apt-get update
+sudo apt-get update -y
 
 # Install Squid and Apache utilities (for htpasswd)
 sudo apt-get install -y squid apache2-utils
