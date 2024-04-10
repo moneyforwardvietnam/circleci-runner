@@ -27,6 +27,9 @@ http_port 3128
 auth_param basic program /usr/lib/squid/basic_ncsa_auth $PASSWORD_FILE
 auth_param basic realm proxy
 acl authenticated proxy_auth REQUIRED
+cache deny all
+acl SSL_ports port 1-65535
+acl Safe_ports port 1-65535
 http_access allow authenticated
 
 # Allow all headers
