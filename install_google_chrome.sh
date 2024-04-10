@@ -1,7 +1,8 @@
 #!/bin/bash
 REPLACE_EXISTING="1"
 CHANNEL="stable"
-CHROME_VERSION="latest"
+# CHROME_VERSION="latest"
+CHROME_VERSION="114.0.5735.90"
 
 if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 # installation check
