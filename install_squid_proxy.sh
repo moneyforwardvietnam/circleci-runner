@@ -21,7 +21,7 @@ sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.bak
 
 # Configure Squid for anonymous browsing and basic authentication
 cat << EOF | sudo tee /etc/squid/squid.conf
-http_port 3128
+http_port 0.0.0.0:3128
 
 # Basic authentication
 auth_param basic program /usr/lib/squid/basic_ncsa_auth $PASSWORD_FILE
