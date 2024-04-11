@@ -14,7 +14,7 @@ sudo apt-get update -y
 ##
 ## Install dependencies
 ##
-sudo apt-get install -y htop curl
+sudo apt-get install -y htop curl wget
 
 ## Set no_proxy to global /etc/environment
 if grep -q "^no_proxy=" "$ENV_FILE"; then
