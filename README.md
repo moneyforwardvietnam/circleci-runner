@@ -66,7 +66,3 @@ If you encounter any issues during installation, review the output logs and ensu
 
 If you would like to contribute to the script or suggest improvements, please open an issue or submit a pull request to the repository.
 
-## License
-
-Specify the license under which the script is provided. (e.g., MIT, GPL, etc.)
-Make sure to replace the placeholder text with actual information where necessary, such as the repository URL or specific instructions related to your environment. Additionally, you may want to include the actual scripts for installing Selenium Server, Google Chrome, and ChromeDriver if they are not already part of your repository.
