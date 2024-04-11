@@ -3,7 +3,8 @@
 RANDOM_STRING=$(echo $RANDOM | md5sum | head -c 12)
 PLATFORM="linux/amd64"
 TOKEN=$1
-LOCAL_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+INTERFACE=ens5
+LOCAL_IP=$(ip -4 addr show $INTERFACE | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 SELENIUM_VERSION="4.8.3"
 HTMLQ_VERSION="latest"
 AWS_CLI_VERSION="1.22.34"
