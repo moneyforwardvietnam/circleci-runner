@@ -6,11 +6,12 @@ TOKEN=$1
 LOCAL_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 SELENIUM_VERSION="4.8.3"
 HTMLQ_VERSION="latest"
+AWS_CLI_VERSION="1.22.34"
 #JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | awk '{print $3}')
 
 echo "Install dependencies"
 apt update -y
-apt install nginx maven curl gnupg2 unzip -y
+apt install nginx maven curl gnupg2 unzip python3-pip awscli==${AWS_CLI_VERSION} -y
 
 # Installing htmlq for ci tools
 wget -qO htmlq.tar.gz https://github.com/mgdm/htmlq/releases/${HTMLQ_VERSION}/download/htmlq-x86_64-linux.tar.gz
