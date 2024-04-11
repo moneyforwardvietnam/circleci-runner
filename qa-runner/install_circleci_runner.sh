@@ -12,7 +12,10 @@ AWS_CLI_VERSION="1.22.34"
 
 echo "Install dependencies"
 apt update -y
-apt install nginx maven curl gnupg2 unzip python3-pip awscli==${AWS_CLI_VERSION} -y
+apt install nginx maven curl gnupg2 unzip python3-pip -y
+
+# Install AWS CLI
+apt install awscli -y
 
 # Installing htmlq for ci tools
 wget -qO htmlq.tar.gz https://github.com/mgdm/htmlq/releases/${HTMLQ_VERSION}/download/htmlq-x86_64-linux.tar.gz
@@ -89,8 +92,6 @@ EOF
 systemctl restart circleci.service
 
 
-
-
-./install_selenium_server.sh
-./install_google_chrome.sh
-./install_chromedriver.sh
+/tmp/install_selenium_server.sh
+/tmp/install_google_chrome.sh
+/tmp/install_chromedriver.sh
