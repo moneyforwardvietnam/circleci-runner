@@ -30,6 +30,16 @@ acl authenticated proxy_auth REQUIRED
 cache deny all
 acl SSL_ports port 1-65535
 acl Safe_ports port 1-65535
+
+# Define ACL for no authentication required
+acl no_auth_ips src 10.1.0.1 # MFV gateway for local test
+acl no_auth_ips src 52.199.24.153 # qa-runner
+acl no_auth_ips src 18.181.241.59 # qa-ubuntu
+
+# Allow specific IP to access without authentication
+http_access allow no_auth_ips
+
+# Allow authenticated users
 http_access allow authenticated
 
 # Allow all headers
@@ -37,10 +47,11 @@ request_header_access Allow all
 
 # Only allow cachemgr access from localhost
 http_access allow localhost manager
+
 http_access deny manager
 
-# Allow all access
-http_access allow all
+# Deny all other access
+http_access deny all
 EOF
 
 # Restart Squid to apply the changes
