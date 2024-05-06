@@ -1,6 +1,7 @@
 # QA Runner Installation Script
 
 This repository contains a script for installing and setting up a CircleCI runner with additional tools for QA automation tasks.
+Kibela: https://moneyforward.kibe.la/notes/288129
 
 ## Prerequisites
 
