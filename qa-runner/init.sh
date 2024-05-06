@@ -25,6 +25,9 @@ else
     echo "$ENV_VAR" | sudo tee -a "$ENV_FILE" > /dev/null
 fi
 
+## Add QA runner key to authorized_keys
+cat ./public_key/qa-runner.pub >> /tmp/authorized_keys
+
 ##
 ## Fetching public keys from GitHub
 ##
