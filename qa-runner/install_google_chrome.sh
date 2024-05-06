@@ -146,5 +146,7 @@ else
     exit 1
   fi
   echo "$(google-chrome-$CHANNEL --version) has been installed to $(command -v google-chrome-$CHANNEL)"
+  echo "Mark hold google-chrome version $CHROME_VERSION to match with chrome-driver version $(chromedriver --version)"
+  $SUDO apt-mark hold google-chrome-stable
   echo "Chrome: $CHROME_VERSION" >>"${HOME}/.browser-versions"
 fi
