@@ -12,7 +12,7 @@ AWS_CLI_VERSION="1.22.34"
 
 echo "Install dependencies"
 apt update -y
-apt install nginx maven curl gnupg2 unzip python3-pip -y
+apt install nginx maven curl gnupg2 unzip python3-pip jq -y
 
 # Install AWS CLI
 apt install awscli -y
