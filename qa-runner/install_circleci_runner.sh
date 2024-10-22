@@ -23,73 +23,27 @@ tar xf htmlq.tar.gz -C /usr/local/bin
 htmlq --version
 
 echo "Installing CircleCI Runner for ${PLATFORM}"
-if [ -z ${TOKEN} ]; then
-  echo "ERROR: Please input your CircleCI Token"
-  exit
+# Check if RUNNER_AUTH_TOKEN is provided as an argument
+if [ -z "$TOKEN" ]; then
+  echo "Usage: $0 <RUNNER_AUTH_TOKEN>"
+  exit 1
 fi
 
-base_url="https://circleci-binary-releases.s3.amazonaws.com/circleci-launch-agent"
-if [ -z ${agent_version+x} ]; then
-  agent_version=$(curl "${base_url}/release.txt")
-fi
+# Install CircleCI runner
+echo "Installing CircleCI runner..."
+curl -s https://packagecloud.io/install/repositories/circleci/runner/script.deb.sh?any=true | sudo bash
+sudo apt-get install -y circleci-runner
 
-# Set up runner directory
-echo "Setting up CircleCI Runner directory"
-prefix=/var/opt/circleci
-mkdir -p "${prefix}/workdir"
-chmod 0750 ${prefix}/workdir
+# Update the CircleCI runner configuration with the provided token
+echo "Configuring CircleCI runner..."
+sudo sed -i "s/<< AUTH_TOKEN >>/$TOKEN/g" /etc/circleci-runner/circleci-runner-config.yaml
 
-# Set up runner configuration
-echo "Setting up CircleCI Runner config"
-cat <<EOF > ${prefix}/launch-agent-config.yaml
-api:
-  auth_token: ${TOKEN}
+# Enable and start the CircleCI runner service
+echo "Starting CircleCI runner service..."
+systemctl enable circleci-runner
+systemctl start circleci-runner
 
-runner:
-  name: qa_automation_runner_${RANDOM_STRING}
-  command_prefix: ["sudo", "-niHu", "root", "--"]
-  ssh:
-    advertise_addr: ${LOCAL_IP}:54782
-  working_directory: ${prefix}/workdir
-  cleanup_working_directory: true
-EOF
-chown root: ${prefix}/launch-agent-config.yaml
-chmod 600 ${prefix}/launch-agent-config.yaml
-
-# Downloading launch agent
-echo "Using CircleCI Launch Agent version ${agent_version}"
-echo "Downloading and verifying CircleCI Launch Agent Binary"
-curl -sSL "${base_url}/${agent_version}/checksums.txt" -o checksums.txt
-file="$(grep -F "${PLATFORM}" checksums.txt | cut -d ' ' -f 2 | sed 's/^.//')"
-echo "Downloading CircleCI Launch Agent: ${file}"
-mkdir -p "${PLATFORM}"
-curl --compressed -L "${base_url}/${agent_version}/${file}" -o "${file}"
-
-# Verifying download
-systemctl stop circleci.service
-echo "Verifying CircleCI Launch Agent download"
-grep "${file}" checksums.txt | sha256sum --check && chmod +x "${file}"
-cp -r "${file}" "${prefix}/circleci-launch-agent" || echo "Invalid checksum for CircleCI Launch Agent, please try download again"
-
-# Setup circleci-agent as service
-echo "Setup CircleCI Service"
-cat <<EOF > /etc/systemd/system/circleci.service
-[Unit]
-Description=CircleCI Runner
-After=network.target
-
-[Service]
-ExecStart=${prefix}/circleci-launch-agent --config ${prefix}/launch-agent-config.yaml
-Restart=always
-User=root
-NotifyAccess=exec
-TimeoutStopSec=18300
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl restart circleci.service
+echo "CircleCI runner installation and configuration completed."
 
 
 /tmp/install_selenium_server.sh
